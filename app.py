@@ -68,35 +68,38 @@ def preprocess_image(image, target_size=(224, 224)):
     return arr
 
 # Widget Upload Gambar
-uploaded_file = st.file_uploader("Pilih gambar sayur...", type=["jpg", "jpeg", "png"])
+uploaded_files = st.file_uploader("Pilih gambar sayur...", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Gambar yang diunggah", use_container_width=True)
-    
-    if interpreter is not None:
-        with st.spinner("Menganalisis gambar..."):
-            # Preprocess
-            input_data = preprocess_image(image)
+if uploaded_files:
+    for idx, uploaded_file in enumerate(uploaded_files):
+        with st.container(border=True):
+            st.write(f"### 📷 Gambar #{idx+1}: `{uploaded_file.name}`")
+            image = Image.open(uploaded_file)
+            st.image(image, caption="Gambar yang diunggah", use_container_width=True)
             
-            # Dapatkan tensor input & output
-            input_details = interpreter.get_input_details()
-            output_details = interpreter.get_output_details()
-            
-            # Jalankan inference
-            interpreter.set_tensor(input_details[0]['index'], input_data)
-            interpreter.invoke()
-            
-            # Ambil hasil prediksi
-            output_data = interpreter.get_tensor(output_details[0]['index'])[0]
-            pred_idx = np.argmax(output_data)
-            confidence = output_data[pred_idx]
-            
-            # Tampilkan Hasil
-            st.success(f"### Prediksi: **{labels[pred_idx]}**")
-            st.write(f"Confidence score: **{confidence * 100:.2f}%**")
-            
-            # Progres bar
-            st.progress(float(confidence))
-    else:
-        st.warning("Model tidak siap.")
+            if interpreter is not None:
+                with st.spinner("Menganalisis gambar..."):
+                    # Preprocess
+                    input_data = preprocess_image(image)
+                    
+                    # Dapatkan tensor input & output
+                    input_details = interpreter.get_input_details()
+                    output_details = interpreter.get_output_details()
+                    
+                    # Jalankan inference
+                    interpreter.set_tensor(input_details[0]['index'], input_data)
+                    interpreter.invoke()
+                    
+                    # Ambil hasil prediksi
+                    output_data = interpreter.get_tensor(output_details[0]['index'])[0]
+                    pred_idx = np.argmax(output_data)
+                    confidence = output_data[pred_idx]
+                    
+                    # Tampilkan Hasil
+                    st.success(f"Prediksi: **{labels[pred_idx]}**")
+                    st.write(f"Confidence score: **{confidence * 100:.2f}%**")
+                    
+                    # Progres bar
+                    st.progress(float(confidence))
+            else:
+                st.warning("Model tidak siap.")
