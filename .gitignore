@@ -1,0 +1,14 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large files and models
+best_model.keras
+*.keras
+*.zip
+*.tar.gz
+*.tgz
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
