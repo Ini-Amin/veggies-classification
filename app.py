@@ -42,13 +42,16 @@ def load_model():
     
     # Deteksi backend interpreter
     try:
-        import tflite_runtime.interpreter as tflite
+        import ai_edge_litert.interpreter as tflite
     except ImportError:
         try:
-            import tensorflow.lite as tflite
+            import tflite_runtime.interpreter as tflite
         except ImportError:
-            st.error("Gagal memuat interpreter TFLite. Silakan install `tflite-runtime` atau `tensorflow`.")
-            return None
+            try:
+                import tensorflow.lite as tflite
+            except ImportError:
+                st.error("Gagal memuat interpreter TFLite. Silakan install `ai-edge-litert`, `tflite-runtime` atau `tensorflow`.")
+                return None
 
     interpreter = tflite.Interpreter(model_path=MODEL_PATH)
     interpreter.allocate_tensors()
